@@ -1,0 +1,11 @@
+displayName: URL Param Extractor
+type: middleware
+
+import: github.com/CamiloManrique/traefik-url-extractor
+
+summary: 'Extracts URL path parameters into custom request headers using named regex capture groups'
+
+testData:
+  regex: '/test/(?P<id>[a-z0-9-]+)'
+  headers:
+    X-Id: id
