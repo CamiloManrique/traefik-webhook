@@ -1,4 +1,4 @@
-package urlextractor_test
+package traefik_url_extractor_test
 
 import (
 	"context"
@@ -6,11 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	urlextractor "github.com/CamiloManrique/traefik-url-extractor"
+	plugin "github.com/CamiloManrique/traefik-url-extractor"
 )
 
 func TestURLExtractor(t *testing.T) {
-	cfg := urlextractor.CreateConfig()
+	cfg := plugin.CreateConfig()
 	cfg.Regex = `/flows/(?P<flowId>[a-f0-9-]+)/components/(?P<componentId>[a-zA-Z0-9_-]+)`
 	cfg.Headers["X-Flow-Id"] = "flowId"
 	cfg.Headers["X-Component-Id"] = "componentId"
@@ -18,7 +18,7 @@ func TestURLExtractor(t *testing.T) {
 	ctx := context.Background()
 	next := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {})
 
-	handler, err := urlextractor.New(ctx, next, cfg, "test-plugin")
+	handler, err := plugin.New(ctx, next, cfg, "test-plugin")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func TestURLExtractor(t *testing.T) {
 }
 
 func TestURLExtractorNoMatch(t *testing.T) {
-	cfg := urlextractor.CreateConfig()
+	cfg := plugin.CreateConfig()
 	cfg.Regex = `/flows/(?P<flowId>[a-f0-9-]+)`
 	cfg.Headers["X-Flow-Id"] = "flowId"
 
@@ -48,7 +48,7 @@ func TestURLExtractorNoMatch(t *testing.T) {
 		nextCalled = true
 	})
 
-	handler, err := urlextractor.New(ctx, next, cfg, "test-plugin")
+	handler, err := plugin.New(ctx, next, cfg, "test-plugin")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,28 +71,28 @@ func TestURLExtractorNoMatch(t *testing.T) {
 
 func TestURLExtractorInvalidConfig(t *testing.T) {
 	t.Run("empty regex", func(t *testing.T) {
-		cfg := urlextractor.CreateConfig()
+		cfg := plugin.CreateConfig()
 		cfg.Headers["X-Id"] = "id"
-		_, err := urlextractor.New(context.Background(), http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), cfg, "test")
+		_, err := plugin.New(context.Background(), http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), cfg, "test")
 		if err == nil {
 			t.Error("expected error for empty regex")
 		}
 	})
 
 	t.Run("empty headers", func(t *testing.T) {
-		cfg := urlextractor.CreateConfig()
+		cfg := plugin.CreateConfig()
 		cfg.Regex = `/(?P<id>[a-z]+)`
-		_, err := urlextractor.New(context.Background(), http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), cfg, "test")
+		_, err := plugin.New(context.Background(), http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), cfg, "test")
 		if err == nil {
 			t.Error("expected error for empty headers")
 		}
 	})
 
 	t.Run("invalid regex", func(t *testing.T) {
-		cfg := urlextractor.CreateConfig()
+		cfg := plugin.CreateConfig()
 		cfg.Regex = `(?P<id>[`
 		cfg.Headers["X-Id"] = "id"
-		_, err := urlextractor.New(context.Background(), http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), cfg, "test")
+		_, err := plugin.New(context.Background(), http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {}), cfg, "test")
 		if err == nil {
 			t.Error("expected error for invalid regex")
 		}

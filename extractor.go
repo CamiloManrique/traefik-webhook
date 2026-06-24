@@ -1,5 +1,5 @@
-// Package urlextractor a Traefik plugin to extract URL path parameters into request headers.
-package urlextractor
+// Package traefik_url_extractor a Traefik plugin to extract URL path parameters into request headers.
+package traefik_url_extractor
 
 import (
 	"context"
