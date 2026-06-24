@@ -11,7 +11,7 @@ experimental:
   plugins:
     url-extractor:
       moduleName: github.com/CamiloManrique/traefik-url-extractor
-      version: v1.0.0
+      version: v0.1.0
 ```
 
 ### Dynamic configuration
